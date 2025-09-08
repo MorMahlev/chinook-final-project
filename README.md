@@ -5,10 +5,10 @@ It demonstrates how to design a data warehouse (DWH), implement ETL processes, a
 
 ## Data Model
 
-The Chinook database was transformed into a **star-schema** (DWH2) design:
+The Chinook database was transformed into a **star-schema** (`dwh2`) design:
 
 - **Dimensions:** customer, employee, track, playlist, currency, etc.  
-- **Facts:** invoices and invoice lines.  
+- **Facts:** invoices and invoice lines.
 
 This structure enables efficient analytical queries across multiple business questions.
 
@@ -16,106 +16,90 @@ This structure enables efficient analytical queries across multiple business que
 
 ## ETL Process
 
-The project implemented a full ETL (Extract, Transform, Load) pipeline:
+A full ETL (Extract, Transform, Load) pipeline was implemented:
 
-- **Extract:** pulled raw data from the Chinook database and external currency API.  
-- **Transform:** cleaned and standardized the data, converted currency values, and applied business rules.  
-- **Load:** saved the processed data into the `dwh2` schema with dimension and fact tables.  
+- **Extract:** Pull raw data from the Chinook database and an external currency API.  
+- **Transform:** Clean and standardize the data, convert currency values, and apply business rules.  
+- **Load:** Save the processed data into the `dwh2` schema (dimension & fact tables).
 
-This process ensured reliable, clean, and business-ready data for analysis.
+This ensures reliable, clean, and business-ready data for analysis.
 
-## Analytical Results  
+## Analytical Results
 
-The project includes several advanced analyses. Below are some examples of the visual outputs:
-
+Examples of visual outputs (Pandas implementation):
 
 1. **Monthly Sales Trend**  
-Analyzed sales over time to identify seasonality and growth patterns.
-![Monthly Sales Trend](images\PythonAnalyses (pandas)\monthly_sales_trend_bars.png)
+   Identify seasonality and growth patterns.  
+   ![Monthly Sales Trend](images/PythonAnalyses (pandas)/monthly_sales_trend_bars.png)
 
 2. **Top 5 Customers (USD vs. ILS)**  
-Compared the top 5 customers' spending in both USD and converted ILS. 
-![Top 5 Customers](images\PythonAnalyses (pandas)\top5_customers_spend_usd_ils.png)
+   Compare spending in USD and converted ILS.  
+   ![Top 5 Customers](images/PythonAnalyses (pandas)/top5_customers_spend_usd_ils.png)
 
-3. **Seasonality by Genre** 
- Examined sales seasonality across the top 5 music genres.  
-![Seasonality by Genre](images\PythonAnalyses (pandas)\seasonality_by_genre.png)
+3. **Seasonality by Genre**  
+   Examine seasonality across top genres.  
 
-> Note: Each analysis was implemented twice — using direct SQL (via SQLAlchemy) and using Pandas.  
-> The visualizations shown here are from the Pandas implementation. The SQL-based results are also available in the repository.
+   ![Seasonality by Genre](images/PythonAnalyses (pandas)/seasonality_by_genre.png)
 
-## Project Structure  
+> Each analysis was implemented twice — using direct SQL (via SQLAlchemy) and using Pandas.  
+> The visualizations shown above are from the Pandas version; SQL outputs are also included.
 
-The repository is organized as follows:
+[Full Project Report (PDF)](docs/Answer_File_chinook.pdf)
 
-- **/sql/**  
-  Contains all SQL scripts for schema creation, dimension/fact tables, and analytical queries.
+## Project Structure
 
-- **/python/**  
-  Includes ETL scripts and analytical notebooks/scripts. Organized into:
-  - `/etl/` – scripts for data extraction, transformation, and loading.  
-  - `/analysis/` – scripts for analytical queries and visualizations (both SQL and Pandas versions).
+- **`sql/`** – DDL and analysis queries.  
+  - `dwh2/` – schema & tables (dimensions/facts)  
+  - `analysis/` – analytical SQL queries
+- **`python/`** – ETL & analysis scripts.  
+  - `etl/` – extraction/transform/load scripts  
+  - `analysis/` – analysis & plotting (SQL + Pandas)
+- **`data/`** – processed outputs only (raw files are excluded by `.gitignore`).  
+- **`images/`** – charts and diagrams (used in this README).  
+- **`docs/`** – documentation (e.g., project PDF).  
+- **`requirements.txt`** – Python dependencies.  
+- **`.env.example`** – sample environment variables (no secrets).
 
-- **/data/**  
-  Raw input files (in `/raw/`) and processed outputs (in `/outputs/`).
+## How to Run
 
-- **/images/**  
-  Visual outputs of the analyses (charts, plots, etc.), used in this README.
+### 1) Create & activate a virtual environment (optional)
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
 
-- **/docs/**  
-  Documentation files (answer file, PDFs, etc.).
+# Linux/Mac
+python -m venv venv
+source venv/bin/activate
+```
 
-- **requirements.txt**  
-  Python dependencies required to run the project.
-
-- **.env.example**  
-  Example of environment variables (without sensitive data).
-
-## How to Run  
-
-- **Set up a virtual environment (recommended):**  
-  ```bash
-  python -m venv venv
-  source venv/bin/activate   # On Linux/Mac
-  venv\Scripts\activate      # On Windows
-
-Install dependencies:
+### 2) Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-Set environment variables:
-Create a .env file in the project root.
+### 3) Configure environment variables
+Create a file named `.env` in the project root (use `.env.example` as a reference).  
 
-Add your database connection string (see .env.example).
+Add your database connection string:
+```
+DB_URL=postgresql://<user>:<password>@localhost:5432/chinook
+```
 
-Run ETL process:
-Use the Python scripts in /python/etl/ to load and transform data into the dwh2 schema.
+### 4) Create schema & tables
+Run the SQL scripts under `sql/dwh2/` (order: create_schema.sql, dimensions, then facts).
 
-- **Optional ETL (Currency Loader):**  
-  An additional script (`python/etl/currency_api_loader.py`) can fetch daily USD→ILS exchange rates using a public API.  
-  - Date range is inferred from `dwh2.fact_invoice` (or `stg.invoice`).  
-  - Output table: `stg.usd_ils_rates`.  
-  - The script supports a **dry-run** mode (default) for safe validation before loading.  
+### 5) Run ETL
+Use the scripts in `python/etl/` to extract, transform, and load data into `dwh2`.  
+The optional script (`python/etl/currency_api_loader.py`) fetches daily USD→ILS rates:
 
+- Date range inferred from invoices (e.g., stg.invoice / dwh2.fact_invoice)  
+- Output table: `stg.usd_ils_rates`  
+- Supports a **dry-run** mode for safe validation
 
-Run analyses:
-SQL queries are in /sql/analysis/.
-Python-based analyses are in /python/analysis/.
-Generated visualizations will be saved into /images/.
+### 6) Run analyses
+- SQL queries: `sql/analysis/`  
+- Python analyses: `python/analysis/`  
+- Plots are saved under `images/` and `data/outputs/`.
 
-View results:
-Final plots and outputs are stored in /images/ and /data/outputs/.
-
-See this README for examples.
-
-## Requirements  
-
-Make sure you have the following Python packages installed (these are already listed in `requirements.txt`):  
-
-- pandas  
-- SQLAlchemy  
-- psycopg2-binary  
-- requests  
-- python-dotenv  
-- matplotlib  
-- numpy  
-- adjustText  
+Author: Mor Mahlev

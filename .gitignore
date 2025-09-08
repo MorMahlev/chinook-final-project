@@ -1,23 +1,39 @@
-# local scratch / notes
-local_notes*/
-local_notes-*/
-
-# python venv & env files
+# Environments
 env/
-.venv/
 venv/
+.venv/
+
+# Secrets
 .env
-*.env
+*.pem
+*.key
 
-# data not for publishing
-data/raw/
-data/outputs/
-*.sqlite*
-*.db
+# Python cache
+__pycache__/
+*.pyc
 
-# jupyter junk
+# Jupyter checkpoints
 .ipynb_checkpoints/
 
-# OS junk
-Thumbs.db
+# Local notes & dumps
+local_notes/
+*dump*.sql
+*.bak
+*.log
+
+# Data raw files
+data/raw/
+data/outputs/*-checkpoint.*
+
+# Office temporary files (keep only PDF)
+~$*.docx
+*.docx
+
+# PowerBI
+*.pbix
+
+# IDE & OS
+.vscode/
+.idea/
 .DS_Store
+Thumbs.db
