@@ -1,0 +1,23 @@
+# local scratch / notes
+local_notes*/
+local_notes-*/
+
+# python venv & env files
+env/
+.venv/
+venv/
+.env
+*.env
+
+# data not for publishing
+data/raw/
+data/outputs/
+*.sqlite*
+*.db
+
+# jupyter junk
+.ipynb_checkpoints/
+
+# OS junk
+Thumbs.db
+.DS_Store
